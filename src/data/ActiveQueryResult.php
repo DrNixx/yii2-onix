@@ -404,7 +404,7 @@ class ActiveQueryResult
         $result = array();
 
         if (!is_array($models)) {
-            $models = array($models);
+            $models = [$models];
         }
 
         $errors = array();
