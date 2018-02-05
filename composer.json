@@ -1,0 +1,25 @@
+{
+    "name": "drnixx/yii2-onix",
+    "version": "1.0.0",
+    "description": "Helpers and Extensions for Yii2",
+    "type": "library",
+    "require": {
+        "php": ">=5.6.0",
+        "yiisoft/yii2": "2.0.13.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nick Panteleeff",
+            "email": "drnix@chess-online.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "onix\\": "src/"
+        }
+    },
+     "config": {
+        "platform": {"php": "5.6"}
+    }
+}
