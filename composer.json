@@ -1,11 +1,11 @@
 {
     "name": "drnixx/yii2-onix",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Helpers and Extensions for Yii2",
     "type": "library",
     "require": {
         "php": ">=5.6.0",
-        "yiisoft/yii2": "2.0.13.1"
+        "yiisoft/yii2": "~2.0.6"
     },
     "license": "MIT",
     "authors": [
