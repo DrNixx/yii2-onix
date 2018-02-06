@@ -300,7 +300,7 @@ class DateTimeHelper
         $format = [];
         if ($interval->y !== 0) {
             $format[] = Yii::t(
-                'common',
+                'datetime',
                 '{y,plural,one{# год} few{# года} many{# лет} other{# года}}',
                 ['y' => $interval->y]
             );
@@ -308,7 +308,7 @@ class DateTimeHelper
 
         if ($interval->m !== 0) {
             $format[] = Yii::t(
-                'common',
+                'datetime',
                 '{m,plural,one{# месяц} few{# месяца} many{# месяцев} other{# месяца}}',
                 ['m' => $interval->m]
             );
@@ -316,7 +316,7 @@ class DateTimeHelper
 
         if ($interval->d !== 0) {
             $format[] = Yii::t(
-                'common',
+                'datetime',
                 '{d,plural,one{# день} few{# дня} many{# дней} other{# дня}}',
                 ['d' => $interval->d]
             );
@@ -324,7 +324,7 @@ class DateTimeHelper
 
         if ($interval->h !== 0) {
             $format[] = Yii::t(
-                'common',
+                'datetime',
                 '{h,plural,one{# час} few{# часа} many{# часов} other{# часа}}',
                 ['h' => $interval->h]
             );
@@ -332,7 +332,7 @@ class DateTimeHelper
 
         if ($interval->i !== 0) {
             $format[] = Yii::t(
-                'common',
+                'datetime',
                 '{i,plural,one{# минута} few{# минуты} many{# минут} other{# минуты}}',
                 ['i' => $interval->i]
             );
@@ -340,7 +340,7 @@ class DateTimeHelper
 
         if ($interval->s !== 0) {
             $format[] = Yii::t(
-                'common',
+                'datetime',
                 '{s,plural,one{# секунда} few{# секунды} many{# секунд} other{# секунды}}',
                 ['s' => $interval->s]
             );
