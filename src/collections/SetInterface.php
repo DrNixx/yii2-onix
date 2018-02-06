@@ -1,9 +1,9 @@
 <?php
 namespace onix\collections;
 
-use Onix\Exceptions\NullPointerException;
+use onix\exceptions\NullPointerException;
 use UnexpectedValueException;
-use Onix\Exceptions\UnsupportedOperationException;
+use onix\exceptions\UnsupportedOperationException;
 
 /**
  * A collection that contains no duplicate elements.

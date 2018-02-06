@@ -1,7 +1,7 @@
 <?php
 namespace onix\collections;
 
-use Onix\Exceptions\UnsupportedOperationException;
+use onix\exceptions\UnsupportedOperationException;
 
 /**
  * This provides a skeletal implementation of {@link CollectionInterface}, to

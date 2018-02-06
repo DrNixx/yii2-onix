@@ -1,7 +1,7 @@
 <?php
 namespace onix\collections;
 
-use Onix\Exceptions\UnsupportedOperationException;
+use onix\exceptions\UnsupportedOperationException;
 use UnexpectedValueException;
 
 /**

@@ -2,8 +2,8 @@
 namespace onix\collections;
 
 use UnexpectedValueException;
-use Onix\Exceptions\UnsupportedOperationException;
-use Onix\Exceptions\NullPointerException;
+use onix\exceptions\UnsupportedOperationException;
+use onix\exceptions\NullPointerException;
 
 /**
  * An object that maps keys to values.

@@ -1,8 +1,8 @@
 <?php
 namespace onix\collections;
 
-use Onix\Exceptions\NullPointerException;
-use Onix\Exceptions\UnsupportedOperationException;
+use onix\exceptions\NullPointerException;
+use onix\exceptions\UnsupportedOperationException;
 use UnexpectedValueException;
 
 /**
