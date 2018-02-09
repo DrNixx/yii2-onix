@@ -301,7 +301,7 @@ class DateTimeHelper
         if ($interval->y !== 0) {
             $format[] = Yii::t(
                 'datetime',
-                '{y,plural,one{# год} few{# года} many{# лет} other{# года}}',
+                '{y,plural,one{# year} few{# years} many{# years} other{# years}}',
                 ['y' => $interval->y]
             );
         }
@@ -309,7 +309,7 @@ class DateTimeHelper
         if ($interval->m !== 0) {
             $format[] = Yii::t(
                 'datetime',
-                '{m,plural,one{# месяц} few{# месяца} many{# месяцев} other{# месяца}}',
+                '{m,plural,one{# month} few{# months} many{# months} other{# months}}',
                 ['m' => $interval->m]
             );
         }
@@ -317,7 +317,7 @@ class DateTimeHelper
         if ($interval->d !== 0) {
             $format[] = Yii::t(
                 'datetime',
-                '{d,plural,one{# день} few{# дня} many{# дней} other{# дня}}',
+                '{d,plural,one{# day} few{# days} many{# days} other{# days}}',
                 ['d' => $interval->d]
             );
         }
@@ -325,7 +325,7 @@ class DateTimeHelper
         if ($interval->h !== 0) {
             $format[] = Yii::t(
                 'datetime',
-                '{h,plural,one{# час} few{# часа} many{# часов} other{# часа}}',
+                '{h,plural,one{# hour} few{# hours} many{# hours} other{# hours}}',
                 ['h' => $interval->h]
             );
         }
@@ -333,7 +333,7 @@ class DateTimeHelper
         if ($interval->i !== 0) {
             $format[] = Yii::t(
                 'datetime',
-                '{i,plural,one{# минута} few{# минуты} many{# минут} other{# минуты}}',
+                '{i,plural,one{#minute} few{# minutes} many{# minutes} other{# minutes}}',
                 ['i' => $interval->i]
             );
         }
@@ -341,7 +341,7 @@ class DateTimeHelper
         if ($interval->s !== 0) {
             $format[] = Yii::t(
                 'datetime',
-                '{s,plural,one{# секунда} few{# секунды} many{# секунд} other{# секунды}}',
+                '{s,plural,one{# second} few{# seconds} many{# seconds} other{# seconds}}',
                 ['s' => $interval->s]
             );
         }
