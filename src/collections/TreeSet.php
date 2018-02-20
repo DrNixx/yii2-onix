@@ -177,7 +177,6 @@ class TreeSet extends AbstractSortedSet
      * This is an optional operation.
      *
      * @param mixed $element Element to be removed from the set.
-     * @return SetInterface A reference to the set.
      *
      * @throws NullPointerException If the element is null and the set does not permit null elements (optional).
      * @throws UnexpectedValueException If the element is incompatible with the set (optional).
@@ -196,7 +195,6 @@ class TreeSet extends AbstractSortedSet
      * This is an optional operation.
      *
      * @param CollectionInterface|array $elements Elements to be removed from the set, if present.
-     * @return SetInterface A reference to the set.
      *
      * @throws NullPointerException If one or more of the elements is null and the set does not permit null
      *                                       elements (optional).

@@ -28,7 +28,7 @@ abstract class AbstractSortedSet implements SortedSetInterface
     /**
      * Set the map
      * @param   SortedMapInterface  $map  The underlying map
-     * @return  AbstractSet  $this for chaining
+     * @return  SetInterface  $this for chaining
      */
     protected function setMap($map)
     {

@@ -9,8 +9,10 @@ use yii\db\ActiveRecord;
 class ActiveRecordEx extends ActiveRecord
 {
     /**
+     * @inheritdoc
+     *
      * @param bool $runValidation
-     * @param null $attributeNames
+     * @param array|null $attributeNames
      *
      * @return bool
      *
@@ -34,18 +36,47 @@ class ActiveRecordEx extends ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     *
      * @param bool $runValidation
-     * @param null $attributeNames
+     * @param array|null $attributes
+     *
+     * @return bool|void
+     *
+     * @throws Exception
+     */
+    public function insert($runValidation = true, $attributes = null)
+    {
+        try {
+            parent::insert($runValidation, $attributes);
+        } catch (\Exception $ex) {
+            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
+        } catch (\Throwable $ex) {
+            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     *
+     * @param bool $runValidation
+     * @param array|null $attributeNames
      *
      * @return false|int
      *
-     * @throws \Exception
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
+     * @throws Exception
      */
     public function update($runValidation = true, $attributeNames = null)
     {
-        $result = parent::update($runValidation, $attributeNames);
+        try {
+            $result = parent::update($runValidation, $attributeNames);
+        } catch (Exception $ex) {
+            throw $ex;
+        } catch (\Exception $ex) {
+            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
+        } catch (\Throwable $ex) {
+            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
+        }
         if ($result) {
             $this->invalidateCache();
         }
@@ -54,13 +85,24 @@ class ActiveRecordEx extends ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     *
      * @return false|int
-     * @throws \Exception
-     * @throws \Throwable
+     *
+     * @throws Exception
      */
     public function delete()
     {
-        $result = parent::delete();
+        try {
+            $result = parent::delete();
+        } catch (Exception $ex) {
+            throw $ex;
+        } catch (\Exception $ex) {
+            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
+        } catch (\Throwable $ex) {
+            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
+        }
+
         if ($result) {
             $this->invalidateCache();
         }
