@@ -41,14 +41,14 @@ class ActiveRecordEx extends ActiveRecord
      * @param bool $runValidation
      * @param array|null $attributes
      *
-     * @return bool|void
+     * @return bool
      *
      * @throws Exception
      */
     public function insert($runValidation = true, $attributes = null)
     {
         try {
-            parent::insert($runValidation, $attributes);
+            return parent::insert($runValidation, $attributes);
         } catch (\Exception $ex) {
             throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
         } catch (\Throwable $ex) {
