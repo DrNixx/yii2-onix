@@ -418,4 +418,41 @@ class DateTimeHelper
 
         return $end->getTimestamp() - $start->getTimestamp();
     }
+
+    /**
+     * Convert Iso8601 datetime to SQL string
+     *
+     * @param string $date
+     * @param string $default
+     *
+     * @return string
+     */
+    final public static function dateIso8601ToSqlWithoutTZ($date, $default = null)
+    {
+        if (!empty($date)) {
+            $result = str_replace("T", " ", $date);
+            return str_replace("Z", "", $result);
+        } else {
+            return $default;
+        }
+    }
+
+    /**
+     * Convert W3C datetime to SQL string
+     *
+     * @param string $date
+     * @param string $default
+     *
+     * @return string
+     */
+    final public static function dateSqlToIso8601To($date, $default = null)
+    {
+        if (!empty($date)) {
+            $date = self::asDateTime($date);
+            $date->setTimezone(new \DateTimeZone("UTC"));
+            return $date->format("Y-m-d\TH:i:s\Z");
+        } else {
+            return $default;
+        }
+    }
 }
