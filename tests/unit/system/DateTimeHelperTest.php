@@ -49,10 +49,16 @@ class DateTimeHelperTest extends \Codeception\Test\Unit
         $s = DateTimeHelper::asUtcSql("2013-09-29T18:46:19Z");
         $this->assertEquals("2013-09-29 18:46:19", $s);
 
+        $s = DateTimeHelper::asUtcSql("2013-09-29T18:46:19GMT");
+        $this->assertEquals("2013-09-29 18:46:19", $s);
+
         $s = DateTimeHelper::asUtcSql("2010-07-05 08:00:00+0200");
         $this->assertEquals("2010-07-05 06:00:00", $s);
 
         $s = DateTimeHelper::asUtcSql("2010-07-05 08:00:00 MSK");
+        $this->assertEquals("2010-07-05 05:00:00", $s);
+
+        $s = DateTimeHelper::asUtcSql("2010-07-05T08:00:00MSK");
         $this->assertEquals("2010-07-05 05:00:00", $s);
 
         $s = DateTimeHelper::asUtcSql("2010-07-05 08:00:00");
@@ -171,6 +177,18 @@ class DateTimeHelperTest extends \Codeception\Test\Unit
         $i = new \DateInterval("PT2S");
         $s = DateTimeHelper::intervalToSeconds($i);
         $this->assertEquals(2, $s);
+    }
+
+    public function testDateIsoOffsetToSqlUtc()
+    {
+        $s = DateTimeHelper::dateIsoOffsetToSqlUtc("2013-09-29T18:46:19+02:00");
+        $this->assertEquals("2013-09-29 16:46:19", $s);
+    }
+
+    public function testDateSqlUtcToIsoOffset()
+    {
+        $s = DateTimeHelper::dateSqlUtcToIsoOffset("2013-09-29 18:46:19");
+        $this->assertEquals("2013-09-29T18:46:19+00:00", $s);
     }
 
     public function testDateIso8601ToSqlUtc()

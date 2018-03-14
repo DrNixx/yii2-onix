@@ -471,6 +471,41 @@ class DateTimeHelper
     }
 
     /**
+     * Convert ISO offset datetime to SQL string
+     *
+     * @param string $date Datetime i.e. 2011-12-03T10:15:30+01:00
+     * @param null $default
+     * @return null|string
+     */
+    final public static function dateIsoOffsetToSqlUtc($date, $default = null)
+    {
+        if (!empty($date)) {
+            return self::asUtcSql($date);
+        } else {
+            return $default;
+        }
+    }
+
+    /**
+     * Convert ISO offset datetime to SQL string
+     *
+     * @param string $date Datetime i.e. 2011-12-03 10:15:30
+     * @param null $default
+     *
+     * @return null|string
+     */
+    final public static function dateSqlUtcToIsoOffset($date, $default = null)
+    {
+        if (!empty($date)) {
+            $date = self::asDateTime($date);
+            $date->setTimezone(self::tzUtc());
+            return $date->format("Y-m-d\TH:i:sP");
+        } else {
+            return $default;
+        }
+    }
+
+    /**
      * Convert Iso8601 datetime to SQL string
      *
      * @param string $date
