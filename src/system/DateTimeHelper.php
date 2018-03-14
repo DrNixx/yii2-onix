@@ -7,13 +7,42 @@ use Yii;
 class DateTimeHelper
 {
     /**
+     * @var \DateTimeZone
+     */
+    private static $utc = null;
+
+    /**
+     * Get UTC timezone
+     *
+     * @return \DateTimeZone
+     */
+    private static function tzUtc()
+    {
+        if (self::$utc === null) {
+            self::$utc = new \DateTimeZone('UTC');
+        }
+
+        return self::$utc;
+    }
+
+    /**
+     * @param \DateTimeZone|string $tz
+     *
+     * @return \DateTimeZone
+     */
+    private static function getTimeZone($tz)
+    {
+        return ($tz instanceof \DateTimeZone) ? $tz : new \DateTimeZone($tz);
+    }
+
+    /**
      * Minimal date
      *
      * @return \DateTime
      */
     final public static function minDate()
     {
-        return date_create('1900-01-01', new \DateTimeZone('UTC'));
+        return date_create('1900-01-01', self::tzUtc());
     }
 
     /**
@@ -23,7 +52,7 @@ class DateTimeHelper
      */
     final public static function now()
     {
-        return date_create(null, new \DateTimeZone('UTC'));
+        return date_create(null, self::tzUtc());
     }
 
     /**
@@ -33,7 +62,7 @@ class DateTimeHelper
      */
     final public static function nowSql()
     {
-        return date_create(null, new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+        return date_create(null, self::tzUtc())->format('Y-m-d H:i:s');
     }
 
     /**
@@ -46,9 +75,29 @@ class DateTimeHelper
      */
     final public static function dateOrNowSql($str)
     {
-        return !empty($str) ? $str : date_create(null, new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+        return !empty($str) ? $str : date_create(null, self::tzUtc())->format('Y-m-d H:i:s');
     }
 
+    /**
+     * Date in SQL format (UTC)
+     *
+     * @param \DateTime|string $date
+     *
+     * @return string|null
+     */
+    final public static function asUtcSql($date)
+    {
+        if (!empty($date)) {
+            if ($date instanceof \DateTime) {
+                $date->setTimezone(self::tzUtc());
+                return $date->format('Y-m-d H:i:s');
+            } else {
+                return self::asDateTime($date, "UTC")->format('Y-m-d H:i:s');
+            }
+        } else {
+            return null;
+        }
+    }
 
     /**
      * Date in SQL format
@@ -61,9 +110,9 @@ class DateTimeHelper
     {
         if (!empty($date)) {
             if ($date instanceof \DateTime) {
-                return $date->format('Y-m-d H:i:s');
+                return $date->format('Y-m-d H:i:sO');
             } else {
-                return self::asDateTime($date)->format('Y-m-d H:i:s');
+                return self::asDateTime($date)->format('Y-m-d H:i:sO');
             }
         } else {
             return null;
@@ -74,18 +123,20 @@ class DateTimeHelper
      * Convert string date to [[DateTime]] object
      *
      * @param $str
-     * @param string $tz
+     * @param \DateTimeZone|string $tz
      *
      * @return \DateTime
      */
     final public static function asDateTime($str, $tz = 'UTC')
     {
-        return date_create($str, new \DateTimeZone($tz));
+        $date = date_create($str, self::tzUtc());
+        $date->setTimezone(self::getTimeZone($tz));
+        return $date;
     }
 
     /**
      * @param $str
-     * @param string $tz
+     * @param \DateTimeZone|string $tz
      *
      * @return int
      */
@@ -96,20 +147,20 @@ class DateTimeHelper
 
     /**
      * @param MongoId $mongoId
-     * @param string $tz
+     * @param \DateTimeZone|string $tz
      *
      * @return \DateTime
      */
     final public static function getDateTimeFromMongoId($mongoId, $tz = 'UTC')
     {
         $dateTime = new \DateTime('@'.$mongoId->getTimestamp());
-        $dateTime->setTimezone(new \DateTimeZone($tz));
+        $dateTime->setTimezone(self::getTimeZone($tz));
         return $dateTime;
     }
 
     /**
      * @param $str
-     * @param string $tz
+     * @param \DateTimeZone|string $tz
      *
      * @return int
      */
@@ -427,29 +478,28 @@ class DateTimeHelper
      *
      * @return string
      */
-    final public static function dateIso8601ToSqlWithoutTZ($date, $default = null)
+    final public static function dateIso8601ToSqlUtc($date, $default = null)
     {
         if (!empty($date)) {
-            $result = str_replace("T", " ", $date);
-            return str_replace("Z", "", $result);
+            return self::asUtcSql($date);
         } else {
             return $default;
         }
     }
 
     /**
-     * Convert W3C datetime to SQL string
+     * Convert SQL datetime to Iso8601 string
      *
      * @param string $date
      * @param string $default
      *
      * @return string
      */
-    final public static function dateSqlToIso8601To($date, $default = null)
+    final public static function dateSqlUtcToIso8601($date, $default = null)
     {
         if (!empty($date)) {
             $date = self::asDateTime($date);
-            $date->setTimezone(new \DateTimeZone("UTC"));
+            $date->setTimezone(self::tzUtc());
             return $date->format("Y-m-d\TH:i:s\Z");
         } else {
             return $default;
