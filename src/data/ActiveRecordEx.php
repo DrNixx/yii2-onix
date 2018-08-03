@@ -216,7 +216,13 @@ class ActiveRecordEx extends ActiveRecord
      */
     public function getCacheKey()
     {
-        $ids = implode(';', $this->getPrimaryKey(true));
+        $keys = $this->getPrimaryKey(true);
+        if (count($keys) === 1) {
+            $ids = array_shift($keys);
+        } else {
+            $ids = array_values($keys);
+        }
+
         return static::buildCacheKey($ids);
     }
 
