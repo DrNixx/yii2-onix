@@ -216,7 +216,8 @@ class ActiveRecordEx extends ActiveRecord
      */
     public function getCacheKey()
     {
-        return null;
+        $ids = implode(';', $this->getPrimaryKey(true));
+        return static::buildCacheKey($ids);
     }
 
     /**
