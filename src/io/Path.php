@@ -6,7 +6,7 @@ use onix\exceptions\ArgumentNullException;
 
 final class Path
 {
-    public static function combine($path1, $path2)
+    public static function combine($path1, $path2, $separator = DIRECTORY_SEPARATOR)
     {
         if ($path1 === null) {
             throw new ArgumentNullException("path1");
@@ -36,16 +36,7 @@ final class Path
             }
         }
 
-        if (self::isRooted($path2)) {
-            return $path2;
-        }
-
-        $p1end = $path1[strlen($path1) - 1];
-        if ($p1end != DIRECTORY_SEPARATOR) {
-            return $path1 . DIRECTORY_SEPARATOR . $path2;
-        }
-
-        return $path1 . $path2;
+        return rtrim($path1, $separator) . $separator . ltrim($path2, $separator);
     }
 
     public static function isRooted($path)
@@ -78,13 +69,15 @@ final class Path
     }
 
     /**
-     * функция вычитания части $part из полного пути $path
+     * Subtraction of a part $part from a full path $path
+     *
      * @param string $path Полный путь
      * @param string $part Часть пути
+     * @param string $delimeter
+     *
      * @return string
-     * @throws ArgumentNullException
      */
-    public static function pathSub($path, $part)
+    public static function pathSub($path, $part, $separator = DIRECTORY_SEPARATOR)
     {
         if (empty($path)) {
             throw new ArgumentNullException("path");
@@ -94,8 +87,15 @@ final class Path
             throw new ArgumentNullException("part");
         }
 
-        $part = preg_replace('/\/+$/', '/', $part.'/');
-        $part = addcslashes($part, '/.');
-        return preg_replace('/^'.$part.'/', '/', $path);
+        $pattern = '@[/\\\\]+@';
+        $path = preg_replace($pattern, DIRECTORY_SEPARATOR, $path);
+        $part = preg_replace($pattern, DIRECTORY_SEPARATOR, $part.DIRECTORY_SEPARATOR);
+        $part = preg_quote($part, '@');
+        $result = preg_replace('@^'.$part.'@', DIRECTORY_SEPARATOR, $path);
+        if ($separator != DIRECTORY_SEPARATOR) {
+            $result = str_replace(DIRECTORY_SEPARATOR, $separator, $result);
+        }
+
+        return $result;
     }
 }
