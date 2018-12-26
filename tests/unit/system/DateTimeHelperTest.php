@@ -83,7 +83,7 @@ class DateTimeHelperTest extends \Codeception\Test\Unit
     public function testAsDateTime()
     {
         $d = DateTimeHelper::asDateTime("2013-09-29T18:46:19Z");
-        $this->assertInstanceOf("DateTime", $d);
+        $this->assertInstanceOf("DateTimeImmutable", $d);
 
         $this->assertEquals("2013-09-29 18:46:19", $d->format("Y-m-d H:i:s"));
 

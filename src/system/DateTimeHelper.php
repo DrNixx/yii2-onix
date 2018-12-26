@@ -38,21 +38,29 @@ class DateTimeHelper
     /**
      * Minimal date
      *
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
     final public static function minDate()
     {
-        return date_create('1900-01-01', self::tzUtc());
+        try {
+            return new \DateTimeImmutable('1900-01-01', self::tzUtc());
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
      * Current date
      *
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
     final public static function now()
     {
-        return date_create(null, self::tzUtc());
+        try {
+            return new \DateTimeImmutable('now', self::tzUtc());
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -62,7 +70,14 @@ class DateTimeHelper
      */
     final public static function nowSql()
     {
-        return date_create(null, self::tzUtc())->format('Y-m-d H:i:s');
+        try {
+            $date = new \DateTimeImmutable(null, self::tzUtc());
+            return $date->format('Y-m-d H:i:s');
+        } catch (\Exception $e) {
+            return null;
+        }
+
+
     }
 
     /**
@@ -75,22 +90,23 @@ class DateTimeHelper
      */
     final public static function dateOrNowSql($str)
     {
-        return !empty($str) ? $str : date_create(null, self::tzUtc())->format('Y-m-d H:i:s');
+        return !empty($str) ? $str : self::nowSql();
     }
 
     /**
      * Date in SQL format (UTC)
      *
-     * @param \DateTime|string $date
+     * @param \DateTime|\DateTimeImmutable|string $date
      *
      * @return string|null
+     *
+     * @throws \Exception
      */
     final public static function asUtcSql($date)
     {
         if (!empty($date)) {
-            if ($date instanceof \DateTime) {
-                $date->setTimezone(self::tzUtc());
-                return $date->format('Y-m-d H:i:s');
+            if ($date instanceof \DateTimeInterface) {
+                return $date->setTimezone(self::tzUtc())->format('Y-m-d H:i:s');
             } else {
                 return self::asDateTime($date, "UTC")->format('Y-m-d H:i:s');
             }
@@ -102,14 +118,16 @@ class DateTimeHelper
     /**
      * Date in SQL format
      *
-     * @param \DateTime|string $date
+     * @param \DateTimeInterface|string $date
      *
      * @return string|null
+     *
+     * @throws \Exception
      */
     final public static function asSql($date)
     {
         if (!empty($date)) {
-            if ($date instanceof \DateTime) {
+            if ($date instanceof \DateTimeInterface) {
                 return $date->format('Y-m-d H:i:sO');
             } else {
                 return self::asDateTime($date)->format('Y-m-d H:i:sO');
@@ -120,18 +138,27 @@ class DateTimeHelper
     }
 
     /**
-     * Convert string date to [[DateTime]] object
+     * Convert string date to [[DateTimeImmutable]] object
      *
-     * @param $str
+     * @param $input \DateTimeInterface|string
      * @param \DateTimeZone|string $tz
      *
-     * @return \DateTime
+     * @return \DateTimeImmutable
+     *
+     * @throws \Exception
      */
-    final public static function asDateTime($str, $tz = 'UTC')
+    final public static function asDateTime($input, $tz = 'UTC')
     {
-        $date = date_create($str, self::tzUtc());
-        $date->setTimezone(self::getTimeZone($tz));
-        return $date;
+        if ($input instanceof \DateTimeImmutable) {
+            return $input->setTimezone(self::getTimeZone($tz));
+        } elseif ($input instanceof \DateTime) {
+            return self::cloneDateTime($input)->setTimezone(self::getTimeZone($tz));
+        } else {
+            $date = new \DateTimeImmutable($input, self::tzUtc());
+            return $date->setTimezone(self::getTimeZone($tz));
+        }
+
+
     }
 
     /**
@@ -139,6 +166,8 @@ class DateTimeHelper
      * @param \DateTimeZone|string $tz
      *
      * @return int
+     *
+     * @throws \Exception
      */
     final public static function asTimestamp($str, $tz = 'UTC')
     {
@@ -149,13 +178,14 @@ class DateTimeHelper
      * @param MongoId $mongoId
      * @param \DateTimeZone|string $tz
      *
-     * @return \DateTime
+     * @return \DateTimeImmutable
+     *
+     * @throws \Exception
      */
     final public static function getDateTimeFromMongoId($mongoId, $tz = 'UTC')
     {
-        $dateTime = new \DateTime('@'.$mongoId->getTimestamp());
-        $dateTime->setTimezone(self::getTimeZone($tz));
-        return $dateTime;
+        $dateTime = new \DateTimeImmutable('@'.$mongoId->getTimestamp());
+        return $dateTime->setTimezone(self::getTimeZone($tz));
     }
 
     /**
@@ -163,6 +193,8 @@ class DateTimeHelper
      * @param \DateTimeZone|string $tz
      *
      * @return int
+     *
+     * @throws \Exception
      */
     final public static function asJavaScriptTimestamp($str, $tz = 'UTC')
     {
@@ -174,20 +206,22 @@ class DateTimeHelper
             $msPart = str_pad($parts[1], 6, '0', STR_PAD_RIGHT);
         }
 
-        return self::asDateTime($datePart, $tz)->getTimestamp() * 1000 + intval(intval($msPart) / 1000);
+        return self::asTimestamp($datePart, $tz) * 1000 + intval(intval($msPart) / 1000);
     }
 
     /**
      * @param \DateTime $date
      *
-     * @return \DateTime
+     * @return \DateTimeImmutable
      */
     final public static function cloneDateTime($date)
     {
-        $result = new \DateTime();
-        $result->setTimezone($date->getTimezone());
-        $result->setTimestamp($date->getTimestamp());
-        return $result;
+        try {
+            $result = new \DateTimeImmutable();
+            return $result->setTimezone($date->getTimezone())->setTimestamp($date->getTimestamp());
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -233,12 +267,15 @@ class DateTimeHelper
      */
     final public static function recalculateInterval($interval)
     {
-        $from = new \DateTime;
-        $to = clone $from;
-        $to = $to->add($interval);
-        $diff = $from->diff($to);
-        foreach ($diff as $k => $v) {
-            $interval->$k = $v;
+        try {
+            $from = new \DateTimeImmutable();
+            $to = $from->add($interval);
+            $diff = $to->diff($from);
+            foreach ($diff as $k => $v) {
+                $interval->$k = $v;
+            }
+
+        } catch (\Exception $e) {
         }
 
         return $interval;
@@ -303,14 +340,15 @@ class DateTimeHelper
      * @param int $secs
      *
      * @return string
-     *
-     * @throws \Exception
      */
     final public static function secondsToSpec($secs)
     {
         if (!empty($secs)) {
-            $interval = self::secondsToInterval($secs);
-            return self::intervalToSpec($interval);
+            try {
+                $interval = self::secondsToInterval($secs);
+                return self::intervalToSpec($interval);
+            } catch (\Exception $e) {
+            }
         }
 
         return "";
@@ -418,26 +456,30 @@ class DateTimeHelper
      * @param int $parts
      *
      * @return string
-     *
-     * @throws \Exception
      */
     final public static function formatSeconds($sec, $parts = 0)
     {
         return self::formatInterval(self::secondsToInterval($sec), $parts);
     }
 
+    /**
+     * @param \DateTimeInterface|string $start
+     * @param \DateTimeInterface|string|null $end
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
     final public static function formatDateDiff($start, $end = null)
     {
-        if (!($start instanceof \DateTime)) {
-            $start = new \DateTime($start);
-        }
+        $start = self::asDateTime($start);
 
         if ($end === null) {
-            $end = new \DateTime();
+            $end = self::now();
         }
 
-        if (!($end instanceof \DateTime)) {
-            $end = new \DateTime($start);
+        if (!($end instanceof \DateTimeImmutable)) {
+            $end = self::asDateTime($end);
         }
 
         $interval = $end->diff($start);
@@ -449,12 +491,14 @@ class DateTimeHelper
      * @param int $sec
      *
      * @return \DateInterval
-     *
-     * @throws \Exception
      */
     final public static function secondsToInterval($sec)
     {
-        return new \DateInterval(sprintf('PT%dS', intval($sec)));
+        try {
+            return new \DateInterval(sprintf('PT%dS', intval($sec)));
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -464,10 +508,14 @@ class DateTimeHelper
      */
     final public static function intervalToSeconds($interval)
     {
-        $start = new \DateTimeImmutable();
-        $end = $start->add($interval);
+        try {
+            $start = new \DateTimeImmutable();
+            $end = $start->add($interval);
+            return $end->getTimestamp() - $start->getTimestamp();
+        } catch (\Exception $e) {
+            return 0;
+        }
 
-        return $end->getTimestamp() - $start->getTimestamp();
     }
 
     /**
@@ -475,7 +523,10 @@ class DateTimeHelper
      *
      * @param string $date Datetime i.e. 2011-12-03T10:15:30+01:00
      * @param null $default
+     *
      * @return null|string
+     *
+     * @throws \Exception
      */
     final public static function dateIsoOffsetToSqlUtc($date, $default = null)
     {
@@ -493,6 +544,8 @@ class DateTimeHelper
      * @param null $default
      *
      * @return null|string
+     *
+     * @throws \Exception
      */
     final public static function dateSqlUtcToIsoOffset($date, $default = null)
     {
@@ -512,6 +565,8 @@ class DateTimeHelper
      * @param string $default
      *
      * @return string
+     *
+     * @throws \Exception
      */
     final public static function dateIso8601ToSqlUtc($date, $default = null)
     {
@@ -529,6 +584,7 @@ class DateTimeHelper
      * @param string $default
      *
      * @return string
+     * @throws \Exception
      */
     final public static function dateSqlUtcToIso8601($date, $default = null)
     {
