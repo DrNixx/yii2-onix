@@ -465,26 +465,29 @@ class DateTimeHelper
     /**
      * @param \DateTimeInterface|string $start
      * @param \DateTimeInterface|string|null $end
+     * @param int $parts
      *
      * @return string
      *
      * @throws \Exception
      */
-    final public static function formatDateDiff($start, $end = null)
+    final public static function formatDateDiff($start, $end = null, $parts = 0)
     {
-        $start = self::asDateTime($start);
+        if (!($start instanceof \DateTimeInterface)) {
+            $start = self::asDateTime($start);
+        }
 
         if ($end === null) {
             $end = self::now();
-        }
-
-        if (!($end instanceof \DateTimeImmutable)) {
-            $end = self::asDateTime($end);
+        } else {
+            if (!($end instanceof \DateTimeInterface)) {
+                $end = self::asDateTime($end);
+            }
         }
 
         $interval = $end->diff($start);
 
-        return self::formatInterval($interval);
+        return self::formatInterval($interval, $parts);
     }
 
     /**
