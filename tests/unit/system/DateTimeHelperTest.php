@@ -44,6 +44,9 @@ class DateTimeHelperTest extends \Codeception\Test\Unit
         $this->assertEquals($str, $now);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAsUtcSql()
     {
         $s = DateTimeHelper::asUtcSql("2013-09-29T18:46:19Z");
@@ -65,6 +68,9 @@ class DateTimeHelperTest extends \Codeception\Test\Unit
         $this->assertEquals("2010-07-05 08:00:00", $s);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAsSql()
     {
         $s = DateTimeHelper::asSql("2013-09-29T18:46:19Z");
@@ -80,6 +86,9 @@ class DateTimeHelperTest extends \Codeception\Test\Unit
         $this->assertEquals("2010-07-05 08:00:00+0000", $s);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAsDateTime()
     {
         $d = DateTimeHelper::asDateTime("2013-09-29T18:46:19Z");
@@ -97,6 +106,9 @@ class DateTimeHelperTest extends \Codeception\Test\Unit
         $this->assertEquals("2010-07-05 08:00:00+0000", $d->format("Y-m-d H:i:sO"));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAsTimestamp()
     {
         $t = DateTimeHelper::asTimestamp('2016-03-11 11:00:00', "Europe/Rome");
@@ -162,7 +174,23 @@ class DateTimeHelperTest extends \Codeception\Test\Unit
 
     public function testSecondsToInterval()
     {
+        $s = 172800;
+        $i = DateTimeHelper::secondsToInterval($s);
+        $this->assertEquals(0, $i->y);
+        $this->assertEquals(0, $i->m);
+        $this->assertEquals(2, $i->d);
+        $this->assertEquals(0, $i->h);
+        $this->assertEquals(0, $i->i);
+        $this->assertEquals(0, $i->s);
 
+        $s = 2;
+        $i = DateTimeHelper::secondsToInterval($s);
+        $this->assertEquals(0, $i->y);
+        $this->assertEquals(0, $i->m);
+        $this->assertEquals(0, $i->d);
+        $this->assertEquals(0, $i->h);
+        $this->assertEquals(0, $i->i);
+        $this->assertEquals(2, $i->s);
     }
 
     /**
@@ -179,24 +207,36 @@ class DateTimeHelperTest extends \Codeception\Test\Unit
         $this->assertEquals(2, $s);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDateIsoOffsetToSqlUtc()
     {
         $s = DateTimeHelper::dateIsoOffsetToSqlUtc("2013-09-29T18:46:19+02:00");
         $this->assertEquals("2013-09-29 16:46:19", $s);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDateSqlUtcToIsoOffset()
     {
         $s = DateTimeHelper::dateSqlUtcToIsoOffset("2013-09-29 18:46:19");
         $this->assertEquals("2013-09-29T18:46:19+00:00", $s);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDateIso8601ToSqlUtc()
     {
         $s = DateTimeHelper::dateIso8601ToSqlUtc("2013-09-29T18:46:19Z");
         $this->assertEquals("2013-09-29 18:46:19", $s);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDateSqlUtcToIso8601()
     {
         $s = DateTimeHelper::dateSqlUtcToIso8601("2013-09-29 18:46:19");

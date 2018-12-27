@@ -12,6 +12,11 @@ class DateTimeHelper
     private static $utc = null;
 
     /**
+     * @var \DateTimeImmutable
+     */
+    private static $now = null;
+
+    /**
      * Get UTC timezone
      *
      * @return \DateTimeZone
@@ -56,11 +61,15 @@ class DateTimeHelper
      */
     final public static function now()
     {
-        try {
-            return new \DateTimeImmutable('now', self::tzUtc());
-        } catch (\Exception $e) {
-            return null;
+        if (self::$now === null) {
+            try {
+                self::$now = new \DateTimeImmutable('now', self::tzUtc());
+            } catch (\Exception $e) {
+                return null;
+            }
         }
+
+        return self::$now;
     }
 
     /**
@@ -498,7 +507,7 @@ class DateTimeHelper
     final public static function secondsToInterval($sec)
     {
         try {
-            return new \DateInterval(sprintf('PT%dS', intval($sec)));
+            return self::recalculateInterval(new \DateInterval(sprintf('PT%dS', intval($sec))));
         } catch (\Exception $e) {
             return null;
         }
