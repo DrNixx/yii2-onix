@@ -376,7 +376,7 @@ class Curl extends Component
     public function getOptions()
     {
         $options = [];
-        if (sizeof($this->headers > 0)) {
+        if (sizeof($this->headers) > 0) {
             $options = [
                 CURLOPT_HTTPHEADER => $this->getHeaders()
             ];
@@ -427,7 +427,7 @@ class Curl extends Component
         }
 
         //setup error reporting and profiling
-        Yii::trace('Start sending cURL-Request: '.$url."\n", __METHOD__);
+        Yii::debug('Start sending cURL-Request: '.$url."\n", __METHOD__);
         Yii::beginProfile($method.' '.$url.'#'.md5(serialize($this->getOption(CURLOPT_POSTFIELDS))), __METHOD__);
 
         /**
