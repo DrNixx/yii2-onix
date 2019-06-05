@@ -163,11 +163,8 @@ class DateTimeHelper
         } elseif ($input instanceof \DateTime) {
             return self::cloneDateTime($input)->setTimezone(self::getTimeZone($tz));
         } else {
-            $date = new \DateTimeImmutable($input, self::tzUtc());
-            return $date->setTimezone(self::getTimeZone($tz));
+            return new \DateTimeImmutable($input, self::getTimeZone($tz));
         }
-
-
     }
 
     /**

@@ -238,7 +238,6 @@ class ActiveRecordEx extends ActiveRecord
         if ($cache !== null) {
             $strClass = get_called_class();
             $key = $cache->buildKey([$strClass, ":{$wkey}:", $id]);
-            Yii::debug('Build cache key: '.json_encode([$strClass, ":{$wkey}:", $id]).' = '.$key);
             return $key;
         }
 
@@ -264,7 +263,6 @@ class ActiveRecordEx extends ActiveRecord
         $cache = Yii::$app->cache;
         if ($cache !== null) {
             $strClass = get_called_class();
-            Yii::debug('Build cache tag: '.json_encode([$strClass, 'Tag', $id]));
             return [$cache->buildKey([$strClass, ":Tag:{$wkey}:", $id])];
         }
 
@@ -312,7 +310,6 @@ class ActiveRecordEx extends ActiveRecord
             if ($cache !== null) {
                 $key = $this->getCacheKey();
                 if ($key != null) {
-                    Yii::debug(sprintf("Clear cache key %s", $key));
                     $cache->delete($key);
                 }
 
