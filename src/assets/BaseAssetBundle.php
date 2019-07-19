@@ -78,7 +78,7 @@ class BaseAssetBundle extends AssetBundle
             return $this;
         }
 
-        $ext = $min ? (YII_DEBUG ? ".min.js" : ".js") : ".js";
+        $ext = $min ? (YII_DEBUG ? ".js" : ".min.js") : ".js";
         $file = "{$prefix}{$lang}{$ext}";
         if ($dir === null) {
             $dir = 'js';
