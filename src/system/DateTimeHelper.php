@@ -276,7 +276,7 @@ class DateTimeHelper
         try {
             $from = new \DateTimeImmutable();
             $to = $from->add($interval);
-            $diff = $to->diff($from);
+            $diff = $to->diff($from, true);
             foreach ($diff as $k => $v) {
                 $interval->$k = $v;
             }
