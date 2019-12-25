@@ -286,15 +286,8 @@ class ActiveRecordEx extends ActiveRecord
     public function invalidateCache()
     {
         if (!$this->isNewRecord) {
-            $key = $this->getCacheKey();
-            if ($key != null) {
-                Yii::$app->cache->delete($key);
-
-                $tags = static::buildCacheTag($this->getKeyValues());
-                if ($tags !== null) {
-                    TagDependency::invalidate(Yii::$app->cache, $tags);
-                }
-            }
+            $ids = $this->getKeyValues();
+            static::invalidate($ids);
         }
     }
 
