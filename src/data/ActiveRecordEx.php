@@ -5,6 +5,7 @@ use Yii;
 use yii\base\Exception;
 use yii\caching\TagDependency;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 class ActiveRecordEx extends ActiveRecord
 {
@@ -212,9 +213,9 @@ class ActiveRecordEx extends ActiveRecord
     }
 
     /**
-     * @return string|null
+     * @return array|string|int
      */
-    public function getCacheKey()
+    public function getKeyValues()
     {
         $keys = $this->getPrimaryKey(true);
         if (count($keys) === 1) {
@@ -223,7 +224,15 @@ class ActiveRecordEx extends ActiveRecord
             $ids = array_values($keys);
         }
 
-        return static::buildCacheKey($ids);
+        return $ids;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCacheKey()
+    {
+        return static::buildCacheKey($this->getKeyValues());
     }
 
     /**
@@ -237,18 +246,9 @@ class ActiveRecordEx extends ActiveRecord
         $cache = Yii::$app->cache;
         if ($cache !== null) {
             $strClass = get_called_class();
-            $key = $cache->buildKey([$strClass, ":{$wkey}:", $id]);
-            return $key;
+            return $cache->buildKey([$strClass, ":{$wkey}:", $id]);
         }
 
-        return null;
-    }
-
-    /**
-     * @return string|string[]|null
-     */
-    public function getCacheTag()
-    {
         return null;
     }
 
@@ -256,44 +256,24 @@ class ActiveRecordEx extends ActiveRecord
      * @param int|string|array $id
      * @param string $wkey
      *
-     * @return null|string[]
+     * @return string|null
      */
-    public static function buildCacheTag($id, $wkey = "Key")
+    public static function buildCacheTag($id, $wkey = "Origin")
     {
-        $cache = Yii::$app->cache;
-        if ($cache !== null) {
-            $strClass = get_called_class();
-            return [$cache->buildKey([$strClass, ":Tag:{$wkey}:", $id])];
-        }
-
-        return null;
-    }
-
-    /**
-     * @return TagDependency|null
-     */
-    public function getCacheDependency()
-    {
-        $tags = $this->getCacheTag();
-        if ($tags !== null) {
-            return new TagDependency([
-                'tags' => $tags
-            ]);
-        }
-
-        return null;
+        return static::buildCacheKey($id, ":Tag:{$wkey}:");
     }
 
     /**
      * @param int|string|array $id
+     * @param array $addTags
      * @return TagDependency
      */
-    public static function buildCacheDependency($id)
+    public static function buildCacheDependency($id, $addTags = [])
     {
         $tags = static::buildCacheTag($id);
         if ($tags !== null) {
             return new TagDependency([
-                'tags' => $tags
+                'tags' => ArrayHelper::merge([$tags], $addTags)
             ]);
         }
 
@@ -306,36 +286,30 @@ class ActiveRecordEx extends ActiveRecord
     public function invalidateCache()
     {
         if (!$this->isNewRecord) {
-            $cache = Yii::$app->cache;
-            if ($cache !== null) {
-                $key = $this->getCacheKey();
-                if ($key != null) {
-                    $cache->delete($key);
-                }
+            $key = $this->getCacheKey();
+            if ($key != null) {
+                Yii::$app->cache->delete($key);
 
-                $tags = $this->getCacheTag();
+                $tags = static::buildCacheTag($this->getKeyValues());
                 if ($tags !== null) {
-                    TagDependency::invalidate($cache, $tags);
+                    TagDependency::invalidate(Yii::$app->cache, $tags);
                 }
             }
         }
     }
 
     /**
-     * @param string|int $id
+     * @param array|string|int $id
      */
     public static function invalidate($id)
     {
-        $cache = Yii::$app->cache;
-        if ($cache !== null) {
-            $key = static::buildCacheKey($id);
-            if ($key != null) {
-                $cache->delete($key);
-            }
+        $key = static::buildCacheKey($id);
+        if ($key != null) {
+            Yii::$app->cache->delete($key);
 
             $tags = static::buildCacheTag($id);
             if ($tags !== null) {
-                TagDependency::invalidate($cache, $tags);
+                TagDependency::invalidate(Yii::$app->cache, $tags);
             }
         }
     }
