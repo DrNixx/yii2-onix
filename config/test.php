@@ -13,6 +13,9 @@ return [
     ],
     'language' => 'en-US',
     'components' => [
+        'cache' => [
+            'class' => 'yii\caching\FileCache',
+        ],
         'assetManager' => [
             'basePath' => __DIR__ . '/../web/assets',
         ],

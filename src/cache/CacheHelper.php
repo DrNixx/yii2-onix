@@ -19,32 +19,35 @@ class CacheHelper
     }
 
     /**
-     * @param array $deps
+     * @param string|string[]|TagDependency|TagDependency[] $deps
      * @return TagDependency|null
      */
     public static function joinDependencies($deps)
     {
-        if (Yii::$app->cache !== null) {
+        if ((Yii::$app->cache !== null) && (!empty($deps))) {
             $tags = [];
             foreach ($deps as $dep) {
                 if (is_array($dep)) {
-                    $tags = ArrayHelper::merge($tags, $dep);
+                    $inner = self::joinDependencies($dep);
+                    if ($inner !== null) {
+                        $tags = ArrayHelper::merge($tags, $inner->tags);
+                    }
                 } else {
-                    $tags[] = $dep;
+                    if ($dep instanceof TagDependency) {
+                        $tags = ArrayHelper::merge($tags, (array)$dep->tags);
+                    } else {
+                        $tags[] = $dep;
+                    }
                 }
             }
 
             if (count($tags) > 0) {
                 return new TagDependency([
-                    'tags' => $tags
+                    'tags' => array_unique($tags)
                 ]);
             }
         }
 
         return null;
-    }
-
-    public static function get($cache) {
-
     }
 }

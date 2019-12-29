@@ -73,7 +73,7 @@ final class Path
      *
      * @param string $path Полный путь
      * @param string $part Часть пути
-     * @param string $delimeter
+     * @param string $separator
      *
      * @return string
      */

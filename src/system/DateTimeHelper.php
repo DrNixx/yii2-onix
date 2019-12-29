@@ -158,12 +158,14 @@ class DateTimeHelper
      */
     final public static function asDateTime($input, $tz = 'UTC')
     {
+        $zone = self::getTimeZone($tz);
         if ($input instanceof \DateTimeImmutable) {
-            return $input->setTimezone(self::getTimeZone($tz));
+            return $input->setTimezone($zone);
         } elseif ($input instanceof \DateTime) {
-            return self::cloneDateTime($input)->setTimezone(self::getTimeZone($tz));
+            return self::cloneDateTime($input)->setTimezone($zone);
         } else {
-            return new \DateTimeImmutable($input, self::getTimeZone($tz));
+
+            return (new \DateTimeImmutable($input, $zone))->setTimezone($zone);
         }
     }
 

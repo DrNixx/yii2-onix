@@ -112,9 +112,9 @@ class DateTimeHelperTest extends \Codeception\Test\Unit
     public function testAsTimestamp()
     {
         $t = DateTimeHelper::asTimestamp('2016-03-11 11:00:00', "Europe/Rome");
-        $this->assertEquals(1457694000, $t);
+        $this->assertEquals(1457690400, $t);
         $t = DateTimeHelper::asTimestamp('2016-03-11 11:00:00', "America/New_York");
-        $this->assertEquals(1457694000, $t);
+        $this->assertEquals(1457712000, $t);
     }
 
     public function testGetDateTimeFromMongoId()

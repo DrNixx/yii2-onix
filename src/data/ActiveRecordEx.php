@@ -7,7 +7,6 @@ use yii\base\Exception;
 use yii\base\InvalidConfigException;
 use yii\caching\TagDependency;
 use yii\db\ActiveRecord;
-use yii\helpers\ArrayHelper;
 
 class ActiveRecordEx extends ActiveRecord
 {
@@ -22,13 +21,7 @@ class ActiveRecordEx extends ActiveRecord
     {
         $key = static::buildCacheKey($id);
         if (!empty($key)) {
-            if (is_array($dependency)) {
-                $dependency = CacheHelper::joinDependencies($dependency);
-            }
-
-            return Yii::$app->cache->getOrSet($key, function () use ($id) {
-                return static::findById($id);
-            }, $duration, $dependency);
+            return self::getOrSet($key, $id, $duration, $dependency);
         } else {
             return static::findById($id);
         }
@@ -41,6 +34,46 @@ class ActiveRecordEx extends ActiveRecord
     protected static function findById($id)
     {
         return static::findOne($id);
+    }
+
+    /**
+     * @param static $obj
+     * @return string[]|null
+     */
+    protected static function buildCacheDependency($obj) {
+        return null;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $id
+     * @param int|null $duration
+     * @param string|string[]|null $dependency
+     * @return static|null
+     */
+    private static function getOrSet($key, $id, $duration = null, $dependency = null)
+    {
+        $result = Yii::$app->cache->get($key);
+        if ($result === false) {
+            $result = static::findById($id);
+            if ($result !== null) {
+                if (empty($dependency)) {
+                    $dependency = static::buildCacheDependency($result);
+                }
+
+                if (!empty($dependency)) {
+                    if (is_array($dependency)) {
+                        $dependency = CacheHelper::joinDependencies($dependency);
+                    } elseif (is_string($dependency)) {
+                        $dependency = new TagDependency($dependency);
+                    }
+                }
+
+                Yii::$app->cache->set($key, $result, $duration, $dependency);
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -310,23 +343,6 @@ class ActiveRecordEx extends ActiveRecord
     }
 
     /**
-     * @param int|string|array $id
-     * @param array $addTags
-     * @return TagDependency
-     */
-    public static function buildCacheDependency($id, $addTags = [])
-    {
-        $tags = static::buildCacheTag($id);
-        if ($tags !== null) {
-            return new TagDependency([
-                'tags' => ArrayHelper::merge([$tags], $addTags)
-            ]);
-        }
-
-        return null;
-    }
-
-    /**
      * Invalidate cache related for object
      */
     public function invalidateCache()
@@ -344,12 +360,12 @@ class ActiveRecordEx extends ActiveRecord
     {
         $key = static::buildCacheKey($id);
         if ($key != null) {
-            Yii::$app->cache->delete($key);
-
             $tags = static::buildCacheTag($id);
             if ($tags !== null) {
                 TagDependency::invalidate(Yii::$app->cache, $tags);
             }
+
+            Yii::$app->cache->delete($key);
         }
     }
 }
