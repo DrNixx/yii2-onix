@@ -1,14 +1,52 @@
 <?php
 namespace onix\data;
 
+use onix\cache\CacheHelper;
 use Yii;
 use yii\base\Exception;
+use yii\base\InvalidConfigException;
 use yii\caching\TagDependency;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
 class ActiveRecordEx extends ActiveRecord
 {
+
+    /**
+     * @param mixed $id
+     * @param int|null $duration
+     * @param TagDependency|string[]|null $dependency
+     * @return static
+     */
+    public static function getById($id, $duration = null, $dependency = null)
+    {
+        $key = static::buildCacheKey($id);
+        if (is_array($dependency)) {
+            $dependency = CacheHelper::joinDependencies($dependency);
+        }
+        return Yii::$app->cache->getOrSet($key, function () use ($id) {
+            return static::findById($id);
+        }, $duration, $dependency);
+    }
+
+    public static function findById($id)
+    {
+        return static::findOne($id);
+    }
+
+    /**
+     * @inheritDoc
+     * @throws InvalidConfigException
+     */
+    public function init()
+    {
+        if (Yii::$app->cache === null) {
+            throw new InvalidConfigException('ActiveRecordEx class required valid Yii::app->cache component');
+        }
+
+        parent::init();
+    }
+
     /**
      * Saves the current record.
      *
@@ -243,10 +281,9 @@ class ActiveRecordEx extends ActiveRecord
      */
     public static function buildCacheKey($id, $wkey = "Key")
     {
-        $cache = Yii::$app->cache;
-        if ($cache !== null) {
+        if (!empty($id)) {
             $strClass = get_called_class();
-            return $cache->buildKey([$strClass, ":{$wkey}:", $id]);
+            return Yii::$app->cache->buildKey([$strClass, ":{$wkey}:", $id]);
         }
 
         return null;
@@ -258,7 +295,7 @@ class ActiveRecordEx extends ActiveRecord
      *
      * @return string|null
      */
-    public static function buildCacheTag($id, $wkey = "Origin")
+    public static function buildCacheTag($id, $wkey = "Key")
     {
         return static::buildCacheKey($id, ":Tag:{$wkey}:");
     }

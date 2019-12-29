@@ -19,7 +19,7 @@ class CacheHelper
     }
 
     /**
-     * @param TagDependency[] $deps
+     * @param array $deps
      * @return TagDependency|null
      */
     public static function joinDependencies($deps)
@@ -42,5 +42,9 @@ class CacheHelper
         }
 
         return null;
+    }
+
+    public static function get($cache) {
+
     }
 }
