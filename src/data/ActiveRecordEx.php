@@ -16,20 +16,29 @@ class ActiveRecordEx extends ActiveRecord
      * @param mixed $id
      * @param int|null $duration
      * @param TagDependency|string[]|null $dependency
-     * @return static
+     * @return static|null
      */
-    public static function getById($id, $duration = null, $dependency = null)
+    protected static function getById($id, $duration = null, $dependency = null)
     {
         $key = static::buildCacheKey($id);
-        if (is_array($dependency)) {
-            $dependency = CacheHelper::joinDependencies($dependency);
-        }
-        return Yii::$app->cache->getOrSet($key, function () use ($id) {
+        if (!empty($key)) {
+            if (is_array($dependency)) {
+                $dependency = CacheHelper::joinDependencies($dependency);
+            }
+
+            return Yii::$app->cache->getOrSet($key, function () use ($id) {
+                return static::findById($id);
+            }, $duration, $dependency);
+        } else {
             return static::findById($id);
-        }, $duration, $dependency);
+        }
     }
 
-    public static function findById($id)
+    /**
+     * @param mixed $id
+     * @return static|null
+     */
+    protected static function findById($id)
     {
         return static::findOne($id);
     }
