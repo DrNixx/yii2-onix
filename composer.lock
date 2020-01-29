@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b65453fa35a8d2e9b0a61683db7e84e2",
+    "content-hash": "5e6ff2eb38c66d961887a161ef84c92a",
     "packages": [
         {
             "name": "bower-asset/inputmask",
@@ -615,20 +615,22 @@
         },
         {
             "name": "codeception/verify",
-            "version": "0.3.3",
+            "version": "0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/Verify.git",
-                "reference": "5d649dda453cd814dadc4bb053060cd2c6bb4b4c"
+                "reference": "f83152459cc96877f0703448190ed3df736f14c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/Verify/zipball/5d649dda453cd814dadc4bb053060cd2c6bb4b4c",
-                "reference": "5d649dda453cd814dadc4bb053060cd2c6bb4b4c",
+                "url": "https://api.github.com/repos/Codeception/Verify/zipball/f83152459cc96877f0703448190ed3df736f14c2",
+                "reference": "f83152459cc96877f0703448190ed3df736f14c2",
                 "shasum": ""
             },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0"
+            "require": {
+                "codeception/phpunit-wrapper": ">6.0.16 <6.1.0",
+                "php": "5.6.*",
+                "phpunit/phpunit": "5.7.*"
             },
             "type": "library",
             "autoload": {
@@ -647,7 +649,7 @@
                 }
             ],
             "description": "BDD assertion library for PHPUnit",
-            "time": "2017-01-09T10:58:51+00:00"
+            "time": "2019-08-24T14:29:07+00:00"
         },
         {
             "name": "doctrine/instantiator",
