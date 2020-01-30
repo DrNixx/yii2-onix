@@ -38,7 +38,10 @@ class ActiveRecordEx extends ActiveRecord
 
     /**
      * @param static $obj
+     *
      * @return string[]|null
+     *
+     * @noinspection PhpUnusedParameterInspection
      */
     protected static function buildCacheDependency($obj) {
         return null;

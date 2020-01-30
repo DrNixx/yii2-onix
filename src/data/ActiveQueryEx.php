@@ -1,8 +1,10 @@
 <?php
 namespace onix\data;
 
+use yii\base\UnknownPropertyException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\Exception as DbException;
 
 /**
  * @property string $fieldPrefix
@@ -45,7 +47,7 @@ class ActiveQueryEx extends ActiveQuery
      *
      * @return mixed
      *
-     * @throws \yii\base\UnknownPropertyException
+     * @throws UnknownPropertyException
      */
     public function __get($name)
     {
@@ -75,7 +77,7 @@ class ActiveQueryEx extends ActiveQuery
      * @param string $name
      * @param mixed $value
      *
-     * @throws \yii\base\UnknownPropertyException
+     * @throws UnknownPropertyException
      */
     public function __set($name, $value)
     {
@@ -131,7 +133,7 @@ class ActiveQueryEx extends ActiveQuery
      *
      * @return array
      *
-     * @throws \yii\db\Exception
+     * @throws DbException
      */
     public function allRaw($db = null)
     {

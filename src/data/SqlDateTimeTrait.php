@@ -1,5 +1,5 @@
 <?php
-namespace common\models;
+namespace onix\data;
 
 use DateTimeImmutable;
 use DateTimeZone;
