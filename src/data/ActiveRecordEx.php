@@ -350,10 +350,8 @@ class ActiveRecordEx extends ActiveRecord
      */
     public function invalidateCache()
     {
-        if (!$this->isNewRecord) {
-            $ids = $this->getKeyValues();
-            static::invalidate($ids);
-        }
+        $ids = $this->getKeyValues();
+        static::invalidate($ids);
     }
 
     /**
