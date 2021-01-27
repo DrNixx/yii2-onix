@@ -264,8 +264,7 @@ class ActiveQueryResult
         $field = $filter->field;
 
         if (!empty($properties[$field])) {
-            $db = Yii::$app->getDb();
-            $field = $db->quoteColumnName($properties[$field]);
+            $field = $this->db->quoteColumnName($properties[$field]);
             $index = array_search($filter, $all);
 
             $value = ":filter$index";
