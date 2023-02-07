@@ -128,18 +128,20 @@ class DateTimeHelper
      * Date in SQL format
      *
      * @param \DateTimeInterface|string $date
+     * @param bool $withTz
      *
      * @return string|null
      *
      * @throws \Exception
      */
-    final public static function asSql($date)
+    final public static function asSql($date, $withTz = true)
     {
+        $format = $withTz ? 'Y-m-d H:i:sO' : 'Y-m-d H:i:s';
         if (!empty($date)) {
             if ($date instanceof \DateTimeInterface) {
-                return $date->format('Y-m-d H:i:sO');
+                return $date->format($format);
             } else {
-                return self::asDateTime($date)->format('Y-m-d H:i:sO');
+                return self::asDateTime($date)->format($format);
             }
         } else {
             return null;
