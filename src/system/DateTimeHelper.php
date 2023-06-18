@@ -34,9 +34,12 @@ class DateTimeHelper
      * @param \DateTimeZone|string $tz
      *
      * @return \DateTimeZone
+     *
+     * @noinspection PhpDocMissingThrowsInspection
      */
     private static function getTimeZone($tz)
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return ($tz instanceof \DateTimeZone) ? $tz : new \DateTimeZone($tz);
     }
 
@@ -108,8 +111,6 @@ class DateTimeHelper
      * @param \DateTime|\DateTimeImmutable|string $date
      *
      * @return string|null
-     *
-     * @throws \Exception
      */
     final public static function asUtcSql($date)
     {
@@ -117,7 +118,7 @@ class DateTimeHelper
             if ($date instanceof \DateTimeInterface) {
                 return $date->setTimezone(self::tzUtc())->format('Y-m-d H:i:s');
             } else {
-                return self::asDateTime($date, "UTC")->format('Y-m-d H:i:s');
+                return self::asDateTime($date)->format('Y-m-d H:i:s');
             }
         } else {
             return null;
@@ -131,8 +132,6 @@ class DateTimeHelper
      * @param bool $withTz
      *
      * @return string|null
-     *
-     * @throws \Exception
      */
     final public static function asSql($date, $withTz = true)
     {
@@ -155,8 +154,7 @@ class DateTimeHelper
      * @param \DateTimeZone|string $tz
      *
      * @return \DateTimeImmutable
-     *
-     * @throws \Exception
+     * @noinspection PhpDocMissingThrowsInspection
      */
     final public static function asDateTime($input, $tz = 'UTC')
     {
@@ -166,7 +164,7 @@ class DateTimeHelper
         } elseif ($input instanceof \DateTime) {
             return self::cloneDateTime($input)->setTimezone($zone);
         } else {
-
+            /** @noinspection PhpUnhandledExceptionInspection */
             return (new \DateTimeImmutable($input, $zone))->setTimezone($zone);
         }
     }
@@ -176,8 +174,6 @@ class DateTimeHelper
      * @param \DateTimeZone|string $tz
      *
      * @return int
-     *
-     * @throws \Exception
      */
     final public static function asTimestamp($str, $tz = 'UTC')
     {
@@ -190,10 +186,11 @@ class DateTimeHelper
      *
      * @return \DateTimeImmutable
      *
-     * @throws \Exception
+     * @noinspection PhpDocMissingThrowsInspection
      */
     final public static function getDateTimeFromMongoId($mongoId, $tz = 'UTC')
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         $dateTime = new \DateTimeImmutable('@'.$mongoId->getTimestamp());
         return $dateTime->setTimezone(self::getTimeZone($tz));
     }
@@ -203,8 +200,6 @@ class DateTimeHelper
      * @param \DateTimeZone|string $tz
      *
      * @return int
-     *
-     * @throws \Exception
      */
     final public static function asJavaScriptTimestamp($str, $tz = 'UTC')
     {
@@ -213,7 +208,7 @@ class DateTimeHelper
         if (strpos($str, '.') !== false) {
             $parts = explode('.', $str);
             $datePart = $parts[0];
-            $msPart = str_pad($parts[1], 6, '0', STR_PAD_RIGHT);
+            $msPart = str_pad($parts[1], 6, '0');
         }
 
         return self::asTimestamp($datePart, $tz) * 1000 + intval(intval($msPart) / 1000);
@@ -316,15 +311,14 @@ class DateTimeHelper
 
         $timeMarkerSet = false;
         if ($interval->h !== 0) {
-            if (!$timeMarkerSet) {
-                $result .= 'T';
-            }
-
+            $timeMarkerSet = true;
+            $result .= 'T';
             $result .= sprintf('%dH', $interval->h);
         }
 
         if ($interval->i !== 0) {
             if (!$timeMarkerSet) {
+                $timeMarkerSet = true;
                 $result .= 'T';
             }
 
@@ -369,13 +363,14 @@ class DateTimeHelper
      *
      * @return int
      *
-     * @throws \Exception
+     * @noinspection PhpDocMissingThrowsInspection
      */
     final public static function specToSeconds($spec)
     {
         if (!empty($spec)) {
             if (is_string($spec) && (($spec[0] == "P") || ($spec[0] == "p"))) {
                 $spec = strtoupper($spec);
+                /** @noinspection PhpUnhandledExceptionInspection */
                 $interval = new \DateInterval($spec);
                 return self::intervalToSeconds($interval);
             } else {
@@ -478,8 +473,6 @@ class DateTimeHelper
      * @param int $parts
      *
      * @return string
-     *
-     * @throws \Exception
      */
     final public static function formatDateDiff($start, $end = null, $parts = 0)
     {
@@ -538,8 +531,6 @@ class DateTimeHelper
      * @param null $default
      *
      * @return null|string
-     *
-     * @throws \Exception
      */
     final public static function dateIsoOffsetToSqlUtc($date, $default = null)
     {
@@ -557,8 +548,6 @@ class DateTimeHelper
      * @param null $default
      *
      * @return null|string
-     *
-     * @throws \Exception
      */
     final public static function dateSqlUtcToIsoOffset($date, $default = null)
     {
@@ -578,8 +567,6 @@ class DateTimeHelper
      * @param string $default
      *
      * @return string
-     *
-     * @throws \Exception
      */
     final public static function dateIso8601ToSqlUtc($date, $default = null)
     {
@@ -597,7 +584,6 @@ class DateTimeHelper
      * @param string $default
      *
      * @return string
-     * @throws \Exception
      */
     final public static function dateSqlUtcToIso8601($date, $default = null)
     {
