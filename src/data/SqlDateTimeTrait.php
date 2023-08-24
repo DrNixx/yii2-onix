@@ -42,6 +42,8 @@ trait SqlDateTimeTrait
                 $tz = $this->getTimeZone();
             }
 
+            $date = str_replace('T', ' ', $date);
+
             if (strpos($date, '.') !== false) {
                 return DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', $date, $tz);
             } elseif (strpos($date, ':') !== false) {
