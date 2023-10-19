@@ -83,13 +83,11 @@ class DateTimeHelper
     final public static function nowSql()
     {
         try {
-            $date = new \DateTimeImmutable(null, self::tzUtc());
+            $date = new \DateTimeImmutable('now', self::tzUtc());
             return $date->format('Y-m-d H:i:s');
         } catch (\Exception $e) {
             return null;
         }
-
-
     }
 
     /**
