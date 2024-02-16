@@ -1,9 +1,6 @@
 <?php
 namespace onix\data;
 
-use DateTimeImmutable;
-use DateTimeZone;
-
 trait SqlDateTimeTrait
 {
     private $timeZone = null;
@@ -19,21 +16,36 @@ trait SqlDateTimeTrait
         $this->timeZoneName = $value;
     }
 
+    /**
+     * @return \DateTimeZone|null
+     * @noinspection PhpDocMissingThrowsInspection
+     */
     protected function getTimeZone()
     {
         if ($this->timeZone === null) {
-            $this->timeZone = new DateTimeZone($this->timeZoneName);
+            /** @noinspection PhpUnhandledExceptionInspection */
+            $this->timeZone = new \DateTimeZone($this->timeZoneName);
         }
 
         return $this->timeZone;
     }
 
     /**
+     * @param \DateTimeZone $value
+     * @return void
+     */
+    protected function setTimeZone(\DateTimeZone $value)
+    {
+        $this->timeZone = $value;
+        $this->timeZoneName = $this->timeZone->getName();
+    }
+
+    /**
      * @param $date
      *
-     * @param DateTimeZone|null $tz
+     * @param \DateTimeZone|null $tz
      *
-     * @return DateTimeImmutable|false|null
+     * @return \DateTimeImmutable|false|null
      */
     protected function parseSqlDateTime($date, $tz = null)
     {
@@ -45,15 +57,15 @@ trait SqlDateTimeTrait
             $date = str_replace('T', ' ', $date);
 
             if (strpos($date, '.') !== false) {
-                return DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', $date, $tz);
+                return \DateTimeImmutable::createFromFormat('Y-m-d H:i:s.u', $date, $tz);
             } elseif (strpos($date, ':') !== false) {
                 if (substr_count($date, ':') == 1) {
-                    return DateTimeImmutable::createFromFormat('Y-m-d H:i', $date, $tz);
+                    return \DateTimeImmutable::createFromFormat('Y-m-d H:i', $date, $tz);
                 } else {
-                    return DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $date, $tz);
+                    return \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $date, $tz);
                 }
             } else {
-                return DateTimeImmutable::createFromFormat('Y-m-d', $date, $tz);
+                return \DateTimeImmutable::createFromFormat('Y-m-d', $date, $tz);
             }
         } else {
             return null;
@@ -63,7 +75,7 @@ trait SqlDateTimeTrait
     /**
      * @param string $time
      *
-     * @return float|string|null
+     * @return float|int|null
      */
     protected function parseSqlTimeToSeconds($time)
     {
