@@ -7,11 +7,11 @@ use yii\db\ActiveRecord;
 use yii\db\Exception as DbException;
 
 /**
- * @property string $fieldPrefix
- * @property string $now
- * @property string $nowMinutes
- * @property integer $timestamp
- * @property string $prefix
+ * @property-read string $now
+ * @property-read string $nowMinutes
+ * @property-read integer $timestamp *
+ * @property-read string $fieldPrefix
+ * @property-read string $prefix Alias for $fieldPrefix
  */
 class ActiveQueryEx extends ActiveQuery
 {
@@ -32,11 +32,11 @@ class ActiveQueryEx extends ActiveQuery
     /**
      * @var string
      */
-    private $as;
+    public $as;
 
-    public function __construct($modelClass, $config = [])
+    public function init()
     {
-        parent::__construct($modelClass, $config);
+        parent::init();
         $this->alias($this->as);
     }
 
@@ -89,14 +89,6 @@ class ActiveQueryEx extends ActiveQuery
                 parent::__set($name, $value);
                 break;
         }
-    }
-
-    /**
-     * @param $value
-     */
-    protected function setAs($value)
-    {
-        $this->as = $value;
     }
 
     /**

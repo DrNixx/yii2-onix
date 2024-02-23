@@ -2,8 +2,7 @@
 namespace onix\data;
 
 use onix\cache\CacheHelper;
-use Yii;
-use yii\base\Exception;
+use yii\base\Exception as BaseException;
 use yii\base\InvalidConfigException;
 use yii\caching\TagDependency;
 use yii\db\ActiveRecord;
@@ -56,7 +55,7 @@ class ActiveRecordEx extends ActiveRecord
      */
     private static function getOrSet($key, $id, $duration = null, $dependency = null)
     {
-        $result = Yii::$app->cache->get($key);
+        $result = \Yii::$app->cache->get($key);
         if ($result === false) {
             $result = static::findById($id);
             if ($result !== null) {
@@ -72,7 +71,7 @@ class ActiveRecordEx extends ActiveRecord
                     }
                 }
 
-                Yii::$app->cache->set($key, $result, $duration, $dependency);
+                \Yii::$app->cache->set($key, $result, $duration, $dependency);
             }
         }
 
@@ -85,7 +84,7 @@ class ActiveRecordEx extends ActiveRecord
      */
     public function init()
     {
-        if (Yii::$app->cache === null) {
+        if (\Yii::$app->cache === null) {
             throw new InvalidConfigException('ActiveRecordEx class required valid Yii::app->cache component');
         }
 
@@ -115,7 +114,7 @@ class ActiveRecordEx extends ActiveRecord
      *
      * @return bool whether the saving succeeded (i.e. no validation errors occurred).
      *
-     * @throws Exception
+     * @throws BaseException
      */
     public function save($runValidation = true, $attributeNames = null)
     {
@@ -125,12 +124,12 @@ class ActiveRecordEx extends ActiveRecord
             }
 
             return $this->update($runValidation, $attributeNames) !== false;
-        } catch (Exception $ex) {
+        } catch (BaseException $ex) {
             throw $ex;
         } catch (\Exception $ex) {
-            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
-        } /** @noinspection PhpUndefinedClassInspection */ catch (\Throwable $ex) {
-            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
+            throw new BaseException($ex->getMessage(), $ex->getCode(), $ex);
+        } catch (\Throwable $ex) {
+            throw new BaseException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
@@ -174,16 +173,16 @@ class ActiveRecordEx extends ActiveRecord
      *
      * @return bool whether the attributes are valid and the record is inserted successfully.
      *
-     * @throws Exception
+     * @throws BaseException
      */
     public function insert($runValidation = true, $attributes = null)
     {
         try {
             return parent::insert($runValidation, $attributes);
         } catch (\Exception $ex) {
-            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
-        } /** @noinspection PhpUndefinedClassInspection */ catch (\Throwable $ex) {
-            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
+            throw new BaseException($ex->getMessage(), $ex->getCode(), $ex);
+        } catch (\Throwable $ex) {
+            throw new BaseException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
 
@@ -238,18 +237,18 @@ class ActiveRecordEx extends ActiveRecord
      * @return int|false the number of rows affected, or `false` if validation fails
      * or [[beforeSave()]] stops the updating process.
      *
-     * @throws Exception
+     * @throws BaseException
      */
     public function update($runValidation = true, $attributeNames = null)
     {
         try {
             $result = parent::update($runValidation, $attributeNames);
-        } catch (Exception $ex) {
+        } catch (BaseException $ex) {
             throw $ex;
         } catch (\Exception $ex) {
-            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
-        } /** @noinspection PhpUndefinedClassInspection */ catch (\Throwable $ex) {
-            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
+            throw new BaseException($ex->getMessage(), $ex->getCode(), $ex);
+        } catch (\Throwable $ex) {
+            throw new BaseException($ex->getMessage(), $ex->getCode(), $ex);
         }
         if ($result) {
             $this->invalidateCache();
@@ -274,18 +273,18 @@ class ActiveRecordEx extends ActiveRecord
      * @return int|false the number of rows deleted, or `false` if the deletion is unsuccessful for some reason.
      * Note that it is possible the number of rows deleted is 0, even though the deletion execution is successful.
      *
-     * @throws Exception
+     * @throws BaseException
      */
     public function delete()
     {
         try {
             $result = parent::delete();
-        } catch (Exception $ex) {
+        } catch (BaseException $ex) {
             throw $ex;
         } catch (\Exception $ex) {
-            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
-        } /** @noinspection PhpUndefinedClassInspection */ catch (\Throwable $ex) {
-            throw new Exception($ex->getMessage(), $ex->getCode(), $ex);
+            throw new BaseException($ex->getMessage(), $ex->getCode(), $ex);
+        } catch (\Throwable $ex) {
+            throw new BaseException($ex->getMessage(), $ex->getCode(), $ex);
         }
 
         if ($result) {
@@ -328,7 +327,7 @@ class ActiveRecordEx extends ActiveRecord
     {
         if (!empty($id)) {
             $strClass = get_called_class();
-            return Yii::$app->cache->buildKey([$strClass, ":{$wkey}:", $id]);
+            return \Yii::$app->cache->buildKey([$strClass, ":{$wkey}:", $id]);
         }
 
         return null;
@@ -363,10 +362,10 @@ class ActiveRecordEx extends ActiveRecord
         if ($key != null) {
             $tags = static::buildCacheTag($id);
             if ($tags !== null) {
-                TagDependency::invalidate(Yii::$app->cache, $tags);
+                TagDependency::invalidate(\Yii::$app->cache, $tags);
             }
 
-            Yii::$app->cache->delete($key);
+            \Yii::$app->cache->delete($key);
         }
     }
 }
