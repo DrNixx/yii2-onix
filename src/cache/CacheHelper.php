@@ -1,7 +1,6 @@
 <?php
 namespace onix\cache;
 
-use Yii;
 use yii\caching\TagDependency;
 use yii\helpers\ArrayHelper;
 
@@ -13,8 +12,8 @@ class CacheHelper
      */
     public static function invalidate($tags)
     {
-        if (Yii::$app->cache !== null) {
-            TagDependency::invalidate(Yii::$app->cache, $tags);
+        if (\Yii::$app->cache !== null) {
+            TagDependency::invalidate(\Yii::$app->cache, $tags);
         }
     }
 
@@ -24,7 +23,7 @@ class CacheHelper
      */
     public static function joinDependencies($deps)
     {
-        if ((Yii::$app->cache !== null) && (!empty($deps))) {
+        if ((\Yii::$app->cache !== null) && (!empty($deps))) {
             $tags = [];
             foreach ($deps as $dep) {
                 if (is_array($dep)) {
